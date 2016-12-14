@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+function joinWithComma { local IFS=","; echo "$*"; }
+
 POSTGRES_URLS=${PGBOUNCER_URLS:-DATABASE_URL}
 POOL_MODE=${PGBOUNCER_POOL_MODE:-transaction}
 SERVER_RESET_QUERY=${PGBOUNCER_SERVER_RESET_QUERY}
@@ -56,17 +58,22 @@ log_connections = ${PGBOUNCER_LOG_CONNECTIONS:-1}
 log_disconnections = ${PGBOUNCER_LOG_DISCONNECTIONS:-1}
 log_pooler_errors = ${PGBOUNCER_LOG_POOLER_ERRORS:-1}
 stats_period = ${PGBOUNCER_STATS_PERIOD:-60}
-[databases]
 EOFEOF
+
+declare -a db_users
+declare -a db_lines
 
 for POSTGRES_URL in $POSTGRES_URLS
 do
   eval POSTGRES_URL_VALUE=\$$POSTGRES_URL
-  IFS=':' read DB_USER DB_PASS DB_HOST DB_PORT DB_NAME <<< $(echo $POSTGRES_URL_VALUE | perl -lne 'print "$1:$2:$3:$4:$5" if /^postgres(?:ql)?:\/\/([^:]*):([^@]*)@(.*?):(.*?)\/(.*?)$/')
+  eval $(echo $POSTGRES_URL_VALUE | sed -n 's/postgres:\/\/\([^:]*\):\([^@]*\)@\([^:]*\):\([0-9]*\)\/\(.*\)$/DB_USER=\1^DB_PASS=\2^DB_HOST=\3^DB_PORT=\4^DB_NAME=\5/p' | tr '^' '\n')
 
   DB_MD5_PASS="md5"`echo -n ${DB_PASS}${DB_USER} | md5sum | awk '{print $1}'`
 
   CLIENT_DB_NAME="db${n}"
+
+  db_users+=("$DB_USER")
+  db_lines+=("$CLIENT_DB_NAME= dbname=$DB_NAME port=610${n}")
 
   echo "Setting ${POSTGRES_URL}_PGBOUNCER config var"
 
@@ -86,16 +93,21 @@ connect = $DB_HOST:$DB_PORT
 retry = ${PGBOUNCER_CONNECTION_RETRY:-"no"}
 EOFEOF
 
+
   cat >> /app/vendor/pgbouncer/users.txt << EOFEOF
 "$DB_USER" "$DB_MD5_PASS"
-EOFEOF
-
-  cat >> /app/vendor/pgbouncer/pgbouncer.ini << EOFEOF
-$CLIENT_DB_NAME= dbname=$DB_NAME port=610${n}
 EOFEOF
 
   let "n += 1"
 done
 
-chmod go-rwx /app/vendor/pgbouncer/*
-chmod go-rwx /app/vendor/stunnel/*
+cat >> /app/vendor/pgbouncer/pgbouncer.ini << EOFEOF
+stats_users = $(joinWithComma ${db_users[@]})
+
+[databases]
+EOFEOF
+
+for db_line in "${db_lines[@]}"
+do
+  echo $db_line >> /app/vendor/pgbouncer/pgbouncer.ini
+done

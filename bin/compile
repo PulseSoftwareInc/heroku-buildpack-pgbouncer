@@ -62,4 +62,9 @@ mkdir -p $BUILD_DIR/bin
 cp "$BUILDPACK_DIR/bin/start-pgbouncer-stunnel" $BUILD_DIR/bin/
 chmod +x $BUILD_DIR/bin/start-pgbouncer-stunnel
 
+echo "-----> Creating symlinks app/bin/{start-pgbouncer, use-pgbouncer} -> app/bin/start-pgbouncer-stunnel"
+cd $BUILD_DIR/bin
+ln -s start-pgbouncer-stunnel start-pgbouncer
+ln -s start-pgbouncer-stunnel use-pgbouncer
+
 echo "-----> pgbouncer/stunnel done"

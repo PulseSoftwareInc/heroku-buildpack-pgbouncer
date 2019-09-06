@@ -60,10 +60,10 @@ mkdir -p $BUILD_DIR/bin
 cp "$BUILDPACK_DIR/bin/start-pgbouncer" $BUILD_DIR/bin/
 chmod +x $BUILD_DIR/bin/start-pgbouncer
 
-echo "-----> Symlinking (legacy) start-pgbouncer-stunnel -> app/bin/start-stunnel"
+echo "-----> Symlinking (legacy) start-pgbouncer-stunnel -> app/bin/start-pgbouncer"
 mkdir -p $BUILD_DIR/bin
 cd $BUILD_DIR/bin
-ln -s start-stunnel start-pgbouncer-stunnel
+ln -s start-pgbouncer start-pgbouncer-stunnel
 cd -
 
 echo "-----> Moving the use-pgbouncer script into app/bin"

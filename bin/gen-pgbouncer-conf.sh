@@ -74,10 +74,6 @@ do
 "$DB_USER" "$DB_MD5_PASS"
 EOFEOF
 
-  cat >> /app/vendor/pgbouncer/pgbouncer.ini << EOFEOF
-$CLIENT_DB_NAME= host=$DB_HOST dbname=$DB_NAME port=$DB_PORT
-EOFEOF
-
   let "n += 1"
 done
 

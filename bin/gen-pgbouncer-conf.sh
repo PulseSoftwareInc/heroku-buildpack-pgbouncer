@@ -57,7 +57,7 @@ do
   CLIENT_DB_NAME="db${n}"
 
   db_users+=("$DB_USER")
-  db_lines+=("$CLIENT_DB_NAME= host=$DB_HOST dbname=$DB_NAME port=610${n}")
+  db_lines+=("$CLIENT_DB_NAME= host=$DB_HOST dbname=$DB_NAME port=$DB_PORT")
 
   echo "Setting ${POSTGRES_URL}_PGBOUNCER config var"
 

@@ -29,6 +29,7 @@ server_tls_ciphers = HIGH:!ADH:!AECDH:!LOW:!EXP:!MD5:!3DES:!SRP:!PSK:@STRENGTH
 ;   statement    - after statement finishes
 pool_mode = ${POOL_MODE}
 server_reset_query = ${SERVER_RESET_QUERY}
+server_check_query = "select 1;"
 max_client_conn = ${PGBOUNCER_MAX_CLIENT_CONN:-100}
 default_pool_size = ${PGBOUNCER_DEFAULT_POOL_SIZE:-1}
 min_pool_size = ${PGBOUNCER_MIN_POOL_SIZE:-0}
@@ -43,6 +44,7 @@ stats_period = ${PGBOUNCER_STATS_PERIOD:-60}
 ignore_startup_parameters = ${PGBOUNCER_IGNORE_STARTUP_PARAMETERS}
 query_wait_timeout = ${PGBOUNCER_QUERY_WAIT_TIMEOUT:-120}
 retry = ${PGBOUNCER_CONNECTION_RETRY:-"no"}
+verbose = ${PGBOUNCER_VERBOSE_LEVEL:=0}
 EOFEOF
 
 declare -a db_users

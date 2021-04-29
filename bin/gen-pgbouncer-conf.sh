@@ -20,7 +20,7 @@ listen_port = 6000
 auth_type = md5
 auth_file = /app/vendor/pgbouncer/users.txt
 server_tls_sslmode = verify-full
-server_tls_ca_file = /app/config/rds-combined-ca-bundle.pem
+server_tls_ca_file = /app/config/rds-ca-2019-root.pem
 server_tls_protocols = secure
 server_tls_ciphers = HIGH:!ADH:!AECDH:!LOW:!EXP:!MD5:!3DES:!SRP:!PSK:@STRENGTH
 
